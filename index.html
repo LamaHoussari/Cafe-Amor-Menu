@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Amor Menu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Code Pro', monospace;
+            background: #f5f1e8;
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        header {
+            background: #000000;
+            color: #f5f1e8;
+            padding: 25px 25px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        nav button {
+            background: transparent;
+            color: #f5f1e8;
+            border: 2px solid #f5f1e8;
+            padding: 10px 20px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        nav button:hover {
+            background: #f5f1e8;
+            color: #2c2416;
+        }
+
+        nav button.active {
+            background: #893114;
+            border-color: #893114;
+            color: #fff;
+        }
+
+        .menu-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            padding: 40px;
+        }
+
+        .menu-section {
+            padding: 40px;
+            border-right: 1px solid #e0d5c7;
+            border-bottom: 1px solid #e0d5c7;
+            display: none;
+        }
+
+        .menu-section.active {
+            display: block;
+        }
+
+        .menu-section:nth-child(2n) {
+            border-right: none;
+        }
+
+        .section-title {
+            font-size: 2em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #2c2416;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .subsection-title {
+            font-size: 1.4em;
+            margin: 30px 0 20px 0;
+            color: #000000;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 15px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .item-price {
+            color: #000000;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .item-description {
+            font-size: 0.9em;
+            color: #000000;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .add-ons {
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #000000;
+            font-size: 0.95em;
+        }
+
+        .add-ons-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        .add-on-item {
+            margin: 8px 0;
+            padding-left: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .menu-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .menu-section {
+                border-right: none;
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            nav button {
+                font-size: 0.8em;
+                padding: 8px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+                letter-spacing: 2px;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            nav {
+                gap: 5px;
+            }
+
+            nav button {
+                font-size: 0.7em;
+                padding: 6px 12px;
+            }
+        }
+
+        .note {
+            font-size: 0.9em;
+            color: #000000;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="cafe amor logo.png" alt="Café Amor Logo" style="height:80px;">
+            <nav id="navbar">
+        </header>
+        
+        <div class="menu-content" id="menuContent"></div>
+    </div>
+
+    <script>
+        const menuData = {
+            drinks: {
+                addOns: [
+                    { name: "Substitute dairy milk with plant-based", price: "$1.5" },
+                    { name: "Extra coffee shot", price: "$1.5" },
+                    { name: "Flavor boost (Caramel / Vanilla / Chocolate / Hazelnut)", price: "$0.5" }
+                ],
+                hot: [
+                    { name: "Espresso", price: "$2.5" },
+                    { name: "Doppio", price: "$3.5" },
+                    { name: "Americano", price: "$3" },
+                    { name: "French Press", price: "$4" },
+                    { name: "Macchiato", price: "$3" },
+                    { name: "Cortado", price: "$3.5" },
+                    { name: "Cappuccino", price: "$4" },
+                    { name: "Latte", price: "$4" },
+                    { name: "Flat White", price: "$4.5" },
+                    { name: "Affogato", price: "$9", description: "Espresso, vanilla ice cream." },
+                    { name: "Mocha", price: "$4.5" },
+                    { name: "Hot Chocolate", price: "$4", note: "We highly recommend you add whipped cream to this one! Add $0.5" },
+                    { name: "Matcha", price: "$5" },
+                    { name: "London Fog Latte", price: "$4", description: "Earl grey, frothed milk." },
+                    { name: "Earl Grey tea", price: "$3.5" },
+                    { name: "Black tea leaves", price: "$3.5" },
+                    { name: "Apple cinnamon black tea", price: "$3.5" },
+                    { name: "Rose white tea", price: "$3.5" },
+                    { name: "Green tea leaves", price: "$3.5" },
+                    { name: "Red berries green tea", price: "$3.5" },
+                    { name: "Lemon Mint green tea", price: "$3.5" },
+                    { name: "Yensoun", price: "$3.5", description: "Dried anise." },
+                    { name: "Camomille", price: "$3.5" },
+                    { name: "Zhourat", price: "$3.5", description: "Dried flowers, herbs & fruits." },
+                    { name: "Café Blanc", price: "$3.5", description: "Orange blossom." }
+                ],
+                cold: [
+                    { name: "Iced Americano", price: "$4" },
+                    { name: "Freddo", price: "$3.5", description: "Doppio shaken with ice" },
+                    { name: "Iced Latte", price: "$4" },
+                    { name: "Café Frappé", price: "$5" },
+                    { name: "Iced Mocha", price: "$4.5" },
+                    { name: "Iced chocolate", price: "$4", description: "Cocoa, milk", note: "Add whipped cream to this one! Add $0.5" },
+                    { name: "Iced Matcha (or Frappé)", price: "$5" },
+                    { name: "Iced London Fog", price: "$4", description: "Earl Grey Tea, milk" },
+                    { name: "Iced Apple cinnamon black tea", price: "$3.5" },
+                    { name: "Iced Rose white tea", price: "$3.5" },
+                    { name: "Iced Red berries green tea", price: "$3.5" },
+                    { name: "Regular Lemonade", price: "$3.5", description: "Lemon, sugar, orange blossom." },
+                    { name: "Minted Lemonade", price: "$4", description: "Lemon, sugar, orange blossom, mint." },
+                    { name: "Lavendar Lemonade", price: "$4.5", description: "Lemon, sugar, lavendar syrup" },
+                    { name: "Mango pineapple Frappé", price: "$6", description: "Mangoes, pineapple, coconut, vanilla" },
+                    { name: "Lavendar Berry Fizz", price: "$5", description: "Berries, lavendar syrup, lemon juice, sparkling water" },
+                    { name: "Ward", price: "$3.5", description: "Rose syrup." },
+                    { name: "Toot", price: "$3.5", description: "Mulberry syrup." },
+                    { name: "Fresh Orange Juice", price: "$4" },
+                    { name: "Power Orange Shot", price: "$3.5", description: "Orange, fresh ginger, fresh curcuma, honey." },
+                    { name: "Sparkling Water", price: "$2.5", note: "Regular / Grapefruit / Lemon" },
+                    { name: "Still Water", price: "Big $3 / Small $2" }
+                ]
+            },
+            cocktails: {
+                gin: [
+                    { name: "Sunset Glow", description: "Gin, rosemary, pink grapefruit, sour mix, orange bitters." },
+                    { name: "Gin Basil", description: "Gin, basil, sour mix." },
+                    { name: "Negroni", description: "Gin, Rosso vermouth, Campari." }
+                ],
+                vodka: [
+                    { name: "Bloody Mary", description: "Vodka, tomato juice, hot sauce, lemon, celery." },
+                    { name: "Dirty Martini", description: "Vodka, extra dry vermouth, olive brine." },
+                    { name: "Espresso Martini", description: "Vodka, espresso, coffee liqueur." }
+                ],
+                rum: [
+                    { name: "Toot Va Bien", description: "Rum, mulberry syrup, mint, lemon, brown sugar, soda water." }
+                ],
+                tequila: [
+                    { name: "Spicy Margarita", description: "Tequila, hot sauce, Triple Sec, lemon." }
+                ],
+                whiskey: [
+                    { name: "Old Fashioned", description: "Bourbon whiskey, orange bitters, brown sugar, orange peel." },
+                    { name: "Amaretto Sour", description: "Amaretto, sour mix." }
+                ]
+            },
+            premiumBar: {
+                gin: [
+                    { name: "Batch One", price: "$17", description: "French, herbal, airy and refreshing. Best enjoyed on the rocks." },
+                    { name: "Blurry Moon", price: "$15", description: "Complex and elusive flavor." }
+                ],
+                whiskey: [
+                    { name: "Bellevoye", price: "$15", description: "French triple malt with a rum finish." },
+                    { name: "Bercloux", price: "$15", description: "French single malt." }
+                ],
+                rumCognac: [
+                    { name: "Thoreau", price: "$15", description: "Père de la désobeissance civile." }
+                ]
+            },
+            wine: {
+                local: [
+                    { name: "Red", price: "Glass $8 / Bottle $28", description: "Domaine des Tourelles / Vieilles Vignes Cinsault 2021" },
+                    { name: "White", price: "Glass $8 / Bottle $28", description: "Domaine des Tourelles 2023" },
+                    { name: "Rosé", price: "Glass $8 / Bottle $28", description: "Domaine des Tourelles 2023" }
+                ],
+                international: [
+                    { name: "Red", price: "Glass $10 / Bottle $45", description: "Château La Grugère / 2021 Bordeaux" },
+                    { name: "White", price: "Glass $10 / Bottle $45", description: "Les Hauts de Sainte-Marie / Entre-Deux-Mers 2022" }
+                ],
+                prosecco: [
+                    { name: "Botega Prosecco", price: "Glass $10 / Bottle $30" }
+                ]
+            },
+            beer: [
+                { name: "Almaza / Almaza Light", price: "$5" },
+                { name: "ElMir Pilsner / Wheat / IPA", price: "$6" }
+            ],
+            arak: [
+                { name: "Brun Shot", price: "$4" },
+                { name: "Brun Glass", price: "$6" }
+            ],
+            food: {
+                duJour: [
+                    { name: "Plat du Jour", note: "(Ask what is the day's special)" },
+                    { name: "Kebbe Bel Saynieh", price: "Full $12 / Half $8", description: "Kebbe with minced meat, onions and pine nuts. Served with a side of green salad or cucumber yogurt." },
+                    { name: "Quiche/Tart", price: "Full $12 / Half $8", note: "(Ask what is the day's special)", description: "Served with a side of green salad." },
+                    { name: "Entrecôte Salad", price: "$12", description: "Melting shreds of cooked Entrecôte, crumbled Feta, mixed greens, cucumbers, tomatoes, chopped date, walnuts with a honey lemon oil dressing." }
+                ],
+                kaek: [
+                    { name: "The Tripolitan", price: "$8", description: "Mixed cheese and sumac. Served with sliced cucumbers and a side of chips." },
+                    { name: "The Mediterranean", price: "$8", description: "Halloumi and homemade pesto. Served with green olives and a side of chips." },
+                    { name: "The Protein", price: "$10", description: "Turkey and cheese with your choice of mustard, mayo or honey. Served with cornichons and a side of chips." }
+                ],
+                sourdough: [
+                    { name: "The Avocado on Toast", price: "$8", description: "Grilled sourdough bread with mashed avocado, diced tomatoes and salt & pepper. Served with green olives and a side of crumbled Feta." },
+                    { name: "The Sweet Avocado on Toast", price: "$8", description: "Grilled sourdough bread with cashew butter, mashed avocado, crushed roasted hazelnuts and a drizzle of honey." },
+                    { name: "The Hummus & Makdous", price: "$8", description: "Hummus topped with stuffed preserved eggplants, fresh Zaatar and diced tomatoes. Served with green olives." },
+                    { name: "The Entrecôte", price: "$12", description: "Melting cooked roast beef shreds, your choice of mayo or mustard (or both!!), diced tomatoes, mixed greens and gravy. Served a side of chips." }
+                ],
+                nibbles: [
+                    { name: "Crackers & Hummus or Crackers & Guac'", price: "$7" },
+                    { name: "Cucumber Yoghurt", price: "$3" },
+                    { name: "Side Green Salad", price: "$3" },
+                    { name: "Extra Crackers", price: "$2" }
+                ],
+                smoothies: {
+                    note: "Substitute dairy milk with plant-based - $1.5",
+                    items: [
+                        { name: "The Purple", description: "Semi-skimmed milk, oats, dates, mixed berries, mango, desiccated coconut, walnuts, honey." },
+                        { name: "The Brown", description: "Semi-skimmed milk, oats, dates, banana, hazelnuts, cocoa powder, honey." },
+                        { name: "The Pistachio", description: "Semi-skimmed milk, basil leaves, dates, pineapple, avocado, pistachio nuts, honey." }
+                    ]
+                },
+                granola: [
+                    { name: "The Apple-A-Day", description: "Plain Greek yogurt, cinnamon, maple syrup, almond granola chunks, apples & toasted almonds." },
+                    { name: "The Berry Good", description: "Blueberry Greek yogurt, coconut granola chunks, mixed berries, cashew nuts, coconut shreds & a drizzle of honey." },
+                    { name: "The Peanuts & Co", description: "Plain Greek yogurt, peanut butter, dark chocolate peanut butter granola chunks, bananas, dates, salted peanuts & a drizzle of honey." }
+                ],
+                eggs: [
+                    { name: "The Eggs on Toast", price: "$8", description: "Grilled sourdough bread with 3 eggs your way, scrambled or sunny side up with your choice of mayo, or Dijon mustard. Served with a side of green salad", note: "Add mashed avocado - $3" },
+                    { name: "The Skip-the-Carbs Eggs", price: "$10", description: "3 eggs your way, scrambled or sunny side up with sliced avocados. Served with a side of green salad." },
+                    { name: "The Omelet - Plain", price: "$7", description: "3 egg-omelet served with a side of green salad." },
+                    { name: "The Omelet - With cheese", price: "$8", description: "3 egg-omelet with mixed cheese. Served with a side of green salad." },
+                    { name: "The Omelet - With turkey & cheese", price: "$10", description: "3 egg-omelet with turkey & mixed cheese. Served with a side of green salad.", note: "Add sliced avocado - $3" }
+                ],
+                desserts: [
+                    { name: "The Sweet Kaa'ké", price: "$6", description: "Nutella, bananas, hazelnuts." },
+                    { name: "The Cake of the Day", price: "$6", note: "(Check fridge) - Add an ice cream scoop!" },
+                    { name: "The Vanilla de Madagascar Ice Cream Scoop", price: "$4" },
+                    { name: "Date Ball", price: "$1", note: "(check fridge)" }
+                ]
+            }
+        };
+
+        const sections = [
+            { id: 'hot-drinks', label: 'HOT DRINKS' },
+            { id: 'cold-drinks', label: 'COLD DRINKS' },
+            { id: 'premium-bar', label: 'PREMIUM BAR' },
+            { id: 'wine', label: 'WINE & PROSECCO' },
+            { id: 'beer', label: 'BEER' },
+            { id: 'arak', label: 'ARAK' },
+            { id: 'du-jour', label: 'DU JOUR' },
+            { id: 'kaek', label: 'KA\'EK' },
+            { id: 'sourdough', label: 'SOURDOUGH' },
+            { id: 'nibbles', label: 'NIBBLES' },
+            { id: 'smoothies', label: 'SMOOTHIES' },
+            { id: 'granola', label: 'GRANOLA BOWLS' },
+            { id: 'eggs', label: 'EGGS' },
+            { id: 'desserts', label: 'DESSERTS' }
+        ];
+
+        function renderMenuItem(item) {
+            let html = '<div class="menu-item">';
+            html += `<div>`;
+            html += `<div class="item-name">${item.name}</div>`;
+            if (item.description) {
+                html += `<div class="item-description">${item.description}</div>`;
+            }
+            if (item.note) {
+                html += `<div class="note">${item.note}</div>`;
+            }
+            html += `</div>`;
+            if (item.price) {
+                html += `<div class="item-price">${item.price}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function renderNavbar() {
+            const navbar = document.getElementById('navbar');
+            sections.forEach(section => {
+                const btn = document.createElement('button');
+                btn.textContent = section.label;
+                btn.onclick = () => showSection(section.id);
+                btn.dataset.section = section.id;
+                navbar.appendChild(btn);
+            });
+        }
+
+        function showSection(sectionId) {
+            // Update active button
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.section === sectionId) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Show only the selected section
+            document.querySelectorAll('.menu-section').forEach(section => {
+                section.classList.remove('active');
+                if (section.dataset.section === sectionId) {
+                    section.classList.add('active');
+                }
+            });
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menuContent');
+            let html = '';
+
+           html += '<div class="menu-section full-width" data-section="hot-drinks">';
+html += '<div class="section-title">HOT DRINKS</div>';
+html += '<div class="add-ons"><div class="add-ons-title">Customizations:</div>';
+menuData.drinks.addOns.forEach(addon => {
+    html += `<div class="add-on-item">${addon.name} - ${addon.price}</div>`;
+});
+html += '</div>';
+menuData.drinks.hot.forEach(item => {
+    html += renderMenuItem(item);
+});
+html += '</div>';
+
+// COLD DRINKS Section
+html += '<div class="menu-section full-width" data-section="cold-drinks">';
+html += '<div class="section-title">COLD DRINKS</div>';
+html += '<div class="add-ons"><div class="add-ons-title">Customizations:</div>';
+menuData.drinks.addOns.forEach(addon => {
+    html += `<div class="add-on-item">${addon.name} - ${addon.price}</div>`;
+});
+html += '</div>';
+menuData.drinks.cold.forEach(item => {
+    html += renderMenuItem(item);
+});
+html += '</div>';
+
+            // COCKTAILS Section
+            html += '<div class="menu-section full-width" data-section="cocktails">';
+            html += '<div class="section-title">COCKTAILS</div>';
+            html += '<div class="subsection-title">GIN</div>';
+            menuData.cocktails.gin.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">VODKA</div>';
+            menuData.cocktails.vodka.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">RUM</div>';
+            menuData.cocktails.rum.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">TEQUILA</div>';
+            menuData.cocktails.tequila.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">WHISKEY</div>';
+            menuData.cocktails.whiskey.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // PREMIUM BAR Section
+            html += '<div class="menu-section full-width" data-section="premium-bar">';
+            html += '<div class="section-title">PREMIUM BAR</div>';
+            html += '<div class="subsection-title">GIN</div>';
+            menuData.premiumBar.gin.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">WHISKEY</div>';
+            menuData.premiumBar.whiskey.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">RUM & COGNAC</div>';
+            menuData.premiumBar.rumCognac.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // WINE & PROSECCO Section
+            html += '<div class="menu-section full-width" data-section="wine">';
+            html += '<div class="section-title">WINE & PROSECCO</div>';
+            html += '<div class="subsection-title">LOCAL WINE</div>';
+            menuData.wine.local.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">INTERNATIONAL WINE</div>';
+            menuData.wine.international.forEach(item => html += renderMenuItem(item));
+            html += '<div class="subsection-title">PROSECCO</div>';
+            menuData.wine.prosecco.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // BEER Section
+            html += '<div class="menu-section full-width" data-section="beer">';
+            html += '<div class="section-title">BEER</div>';
+            menuData.beer.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // ARAK Section
+            html += '<div class="menu-section full-width" data-section="arak">';
+            html += '<div class="section-title">ARAK</div>';
+            menuData.arak.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // DU JOUR Section
+            html += '<div class="menu-section full-width" data-section="du-jour">';
+            html += '<div class="section-title">DU JOUR</div>';
+            menuData.food.duJour.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // KA'EK Section
+            html += '<div class="menu-section full-width" data-section="kaek">';
+            html += '<div class="section-title">KA\'EK</div>';
+            menuData.food.kaek.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // OPEN-FACE SOURDOUGH SANDWICHES Section
+            html += '<div class="menu-section full-width" data-section="sourdough">';
+            html += '<div class="section-title">OPEN-FACE SOURDOUGH</div>';
+            menuData.food.sourdough.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // NIBBLES Section
+            html += '<div class="menu-section full-width" data-section="nibbles">';
+            html += '<div class="section-title">NIBBLES</div>';
+            menuData.food.nibbles.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // SMOOTHIES Section
+            html += '<div class="menu-section full-width" data-section="smoothies">';
+            html += '<div class="section-title">SMOOTHIES</div>';
+            html += `<div class="note" style="margin-bottom: 15px;">${menuData.food.smoothies.note}</div>`;
+            menuData.food.smoothies.items.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // GRANOLA BOWLS Section
+            html += '<div class="menu-section full-width" data-section="granola">';
+            html += '<div class="section-title">GRANOLA BOWLS</div>';
+            menuData.food.granola.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // EGGS Section
+            html += '<div class="menu-section full-width" data-section="eggs">';
+            html += '<div class="section-title">EGGS</div>';
+            menuData.food.eggs.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            // DESSERTS Section
+            html += '<div class="menu-section full-width" data-section="desserts">';
+            html += '<div class="section-title">DESSERTS</div>';
+            menuData.food.desserts.forEach(item => html += renderMenuItem(item));
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        renderNavbar();
+        renderMenu();
+        showSection('hot-drinks'); // Show drinks section by default
+    </script>
+</body>
+</html>
